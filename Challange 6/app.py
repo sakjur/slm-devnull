@@ -3,7 +3,6 @@ import urllib2
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def hello():
     url = urllib2.urlopen("https://lostinspace.lanemarknad.se:8000/api2/?session=f6319047-1cfb-4bfa-ae4b-318355d2b90e&command=longrange")

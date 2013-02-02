@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<title>/dev/null awesomeness</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="200" height="200"></canvas>
+    <div id="starlist"></div>
+    {{ starchoice }}
+<body>
+<script src="/static/jquery.js"></script>
+<script src="/static/main.js"></script>
+<script>
+    shipson = {{ ship | safe }}
+    awesome = {{ short | safe }}
+    awesomeToMap(awesome, shipson);
+</script>
+</html>

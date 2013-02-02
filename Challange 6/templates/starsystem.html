@@ -8,12 +8,13 @@
     <canvas id="canvas" width="200" height="200"></canvas>
     <div id="starlist"></div>
     {{ short }}
-<body>
 <script src="/static/jquery.js"></script>
 <script src="/static/main.js"></script>
 <script>
-    json = {{ stars|safe }}
+    json = {{ stars|tojson|safe }}
+    console.log(json)
     shipson = {{ ship | safe }}
     jsonToMap(json, shipson);
 </script>
+</body>
 </html>

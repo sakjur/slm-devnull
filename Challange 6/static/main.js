@@ -3,9 +3,11 @@ var ctx = canvas.getContext('2d');
 
 function jsonToMap(json, shipson) {
 
-    for (var i = 0; i < json.stars.length; i++)
+    console.log(json)
+
+    for (var i = 0; i < json.length; i++)
     {
-        star = json.stars[i];
+        star = json[i];
 
         ctx.fillStyle = "rgb(200,0,0)";
         ctx.fillRect(star.x, star.y, 4, 4);
@@ -24,9 +26,9 @@ function jsonToMap(json, shipson) {
                     data = $.parseJSON(data)
                     ctx.clearRect(0,0,200,200)
 
-                    for (var i = 0; i < json.stars.length; i++)
+                    for (var i = 0; i < json.length; i++)
                     {
-                        star = json.stars[i];
+                        star = json[i];
 
                         ctx.fillStyle = "rgb(200,0,0)";
                         ctx.fillRect(star.x, star.y, 4, 4);
@@ -42,8 +44,6 @@ function jsonToMap(json, shipson) {
 function awesomeToMap(awesome, shipson) {
     ctx.fillStyle = "rgb(200, 100, 0)";
     ctx.fillRect(100,100,10,10);
-
-    console.log(awesome)
 
     for (var i = 0; i < awesome.system.planetarray.length; i++)
     {
@@ -63,7 +63,6 @@ function awesomeToMap(awesome, shipson) {
         if (id == "edge")
         {
             planet = "edge"
-            console.log("Going to FTL-space")
         }
         else
         {

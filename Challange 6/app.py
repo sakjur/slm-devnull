@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 import urllib2, urllib
+import json
 
 app = Flask(__name__)
 uri = "https://lostinspace.lanemarknad.se:8000"
@@ -30,6 +31,7 @@ def currentSystem(flyTo=None):
     urlshort = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=shortrange")
     short = urlshort.read()
 
+    urlstars = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=longrange")
     urlship = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=show")
     ship = urlship.read()
 
@@ -39,6 +41,28 @@ def currentSystem(flyTo=None):
 
     return render_template('planetsystem.html', short=short, ship=ship)
 
+def createDbStars():
+    urlstars = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=longrange")
+    urlstars = json.load(urlstars)
+
+    for each in urlstars.values():
+        for item in each:
+            addition = Star(item)
+            db.session.add(addition)
+
+    db.session.commit()
+
+def createDbPlanets():
+    urlshort = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=shortrange")
+    urlshort = json.load(urlshort)
+
+    for each in urlshort.values():
+        for item in each:
+            addition = Planet(item)
+            db.session.add(addition)
+
+    db.session.commit()
+
 class Star(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     x = db.Column(db.Integer)
@@ -46,6 +70,13 @@ class Star(db.Model):
     planets = db.Column(db.Integer)
     starClass = db.Column(db.String(50))
     name = db.Column(db.String(80), unique=True)
+
+    def __init__(self, dictionary):
+        self.x = int(dictionary["x"])
+        self.y = int(dictionary["y"])
+        self.planets = str(dictionary["planets"])
+        self.starClass = str(dictionary["class"])
+        self.name = str(dictionary["name"])
 
 class Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)

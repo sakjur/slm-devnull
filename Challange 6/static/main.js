@@ -62,16 +62,35 @@ function awesomeToMap(awesome, shipson) {
         id = id.replace("s", "")
         if (id == "edge")
         {
-            planet = "edge"
+            $.ajax("/current/flyto/edge");
         }
         else
         {
-            planet = awesome.system.planetarray[id].planet_no
-            planet = planet.replace(" ", "%20")
+            inpplanet = awesome.system.planetarray[id]
+            planet = inpplanet.planet_no.replace(" ", "%20")
 
-            $("#planetinfo").html(JSON.stringify(awesome.system.planetarray[id]));
+            $("#planetinfo").html( 
+                function()
+                {
+                    fixedPlan = inpplanet.planet_no.replace("'", "%27")
+                    output = "<div id='q" + id + "' onClick='$.ajax(\"/current/flyto/" + fixedPlan + "\")'>Goto</div>"
+                    output += "<h3>" + inpplanet.planet_no + "</h3>";
+                    output += "Day: " + inpplanet.day + "<br />";
+                    output += "Esc velocity: " + inpplanet.esc_velocity + "<br />";
+                    output += "Cloud cover: " + inpplanet.cloud_cover + "<br />";
+                    output += "Radius: " + inpplanet.radius + "<br />";
+                    output += "Type: " + inpplanet["type"] + "<br />";
+                    output += "Planet #: " + inpplanet.planet_no + "<br />";
+                    output += "Planet coords: (" + inpplanet.x + ", " + inpplanet.y + ")<br />";
+                    output += "Surface gravity: " + inpplanet.surf_grav + "<br />";
+                    output += "Orbit zone: " + inpplanet.orbit_zone + "<br />";
+                    output += "<iframe src=\"/planetinfo/" + inpplanet.planet_no + "\"></iframe>"
+                    
+
+                    return output
+                }
+            );
         }
-        $.ajax("/current/flyto/" + planet);
     });
 
     ctx.fillStyle = "rgb(0,0,200)";
@@ -79,6 +98,8 @@ function awesomeToMap(awesome, shipson) {
 
     setInterval(
         function() {
+            $.ajax("/scanplanet/");
+
             $.ajax("https://lostinspace.lanemarknad.se:8000/api2/?session=f6319047-1cfb-4bfa-ae4b-318355d2b90e&command=ship&arg=show")
              .done(function ( data )
                 { 

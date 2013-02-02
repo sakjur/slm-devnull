@@ -27,19 +27,102 @@ def hello(starchoice=None):
 @app.route("/current")
 @app.route("/current/flyto/<flyTo>")
 def currentSystem(flyTo=None):
-    fillDbStarsystem()
-    urlshort = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=shortrange")
-    short = urlshort.read()
-
     urlstars = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=longrange")
     urlship = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=show")
     ship = urlship.read()
+    pyship = json.loads(ship)
+
+    for each in pyship.items():
+        if each[0] == "currentsystem":
+            currentsystem = str(each[1])
+    
+    cursys = Star.query.filter_by(name=currentsystem).first()
+    cursysid = cursys.id
+
+    for each in Planet.query.filter_by(starid=cursysid):
+        if each:
+            exists = True
+        else:
+            exists = False
+
+    if not exists:
+        fillDbStarsystem()
+
+    urlshort = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=shortrange")
+    short = urlshort.read()
 
     if flyTo:
         planchoice = flyTo.replace(" ", "%20")
         urlflyTo = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=setsystemdest&arg2=" + planchoice)
 
     return render_template('planetsystem.html', short=short, ship=ship)
+
+@app.route('/scanplanet/')
+def scanPlanet():
+    urlship = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=show")
+    ship = urlship.read()
+    pyship = json.loads(ship)
+
+    for each in pyship.items():
+        if each[0] == "currentplanet":
+            currentplanet = str(each[1])
+    
+    curplanet = Planet.query.filter_by(planet_no=currentplanet).first()
+    if not curplanet:
+        return str(currentplanet)
+
+    if planetInfo(currentplanet) == '':
+        fillPlanetData()
+    return currentplanet
+
+@app.route('/planetinfo/<planet>')
+def planetInfo(planet=None):
+    if not planet:
+        return ""
+    planet = Planet.query.filter_by(planet_no=planet).first()
+    if not planet:
+        return ""
+    planetid = planet.id
+
+    planet = PlanDetails.query.filter_by(planetid=planetid).first()
+    rv = ""
+    if planet:
+        rv += "planetid: " + str(planet.planetid) + "<br />"
+        rv += "a: " + str(planet.a) + "<br />"
+        rv += "albedo: " + str(planet.albedo) + "<br />"
+        rv += "atmosphere: " + str(planet.atmosphere) + "<br />"
+        rv += "axial_tilt: " + str(planet.axial_tilt) + "<br />"
+        rv += "boil_point: " + str(planet.boil_point) + "<br />"
+        rv += "core_radius: " + str(planet.core_radius) + "<br />"
+        rv += "density: " + str(planet.density) + "<br />"
+        rv += "dust_mass: " + str(planet.dust_mass) + "<br />"
+        rv += "e: " + str(planet.e) + "<br />"
+        rv += "estimated_temp: " + str(planet.estimated_temp) + "<br />"
+        rv += "estimated_terr_temp: " + str(planet.estimated_terr_temp) + "<br />"
+        rv += "exospheric_temp: " + str(planet.exospheric_temp) + "<br />"
+        rv += "gas_giant: " + str(planet.gas_giant) + "<br />"
+        rv += "gas_mass: " + str(planet.gas_mass) + "<br />"
+        rv += "greenhouse_effect: " + str(planet.greenhouse_effect) + "<br />"
+        rv += "greenhs_rise: " + str(planet.greenhs_rise) + "<br />"
+        rv += "high_temp: " + str(planet.high_temp) + "<br />"
+        rv += "hydrosphere: " + str(planet.hydrosphere) + "<br />"
+        rv += "ice_cover: " + str(planet.ice_cover) + "<br />"
+        rv += "low_temp: " + str(planet.low_temp) + "<br />"
+        rv += "mass: " + str(planet.mass) + "<br />"
+        rv += "max_temp: " + str(planet.max_temp) + "<br />"
+        rv += "min_temp: " + str(planet.min_temp) + "<br />"
+        rv += "minor_moons: " + str(planet.minor_moons) + "<br />"
+        rv += "molec_weight: " + str(planet.molec_weight) + "<br />"
+        rv += "orb_period: " + str(planet.orb_period) + "<br />"
+        rv += "resonant_period: " + str(planet.resonant_period) + "<br />"
+        rv += "rms_velocity: " + str(planet.rms_velocity) + "<br />"
+        rv += "surf_accel: " + str(planet.surf_accel) + "<br />"
+        rv += "surf_pressure: " + str(planet.surf_pressure) + "<br />"
+        rv += "surf_temp: " + str(planet.surf_temp) + "<br />"
+        rv += "volatile_gas_inventory: " + str(planet.volatile_gas_inventory) + "<br />"
+
+    return rv
+
 
 def initializeDb():
     db.create_all()
@@ -128,7 +211,7 @@ class Planet(db.Model):
 
 class PlanDetails(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    planetid = db.Column(db.Integer)
+    planetid = db.Column(db.Integer, unique=True)
     a = db.Column(db.Float)
     albedo = db.Column(db.Float)
     atmosphere = db.Column(db.String(50))

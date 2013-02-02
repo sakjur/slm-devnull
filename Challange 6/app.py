@@ -47,6 +47,21 @@ class Star(db.Model):
     starClass = db.Column(db.String(50))
     name = db.Column(db.String(80), unique=True)
 
+class Planet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    starid = db.Column(db.Integer)
+    x = db.Column(db.Integer)
+    y = db.Column(db.Integer)
+    day = db.Column(db.Float)
+    esc_velocity = db.Column(db.Float)
+    cloud_cover = db.Column(db.Float)
+    radius = db.Column(db.Float)
+    type = db.Column(db.String(50))
+    planet_no = db.Column(db.String(50))
+    surf_grav = db.Column(db.Float)
+    orbit_zone = db.Column(db.Integer)
+
+
 if __name__ == "__main__":
     app.debug = True
     app.run()

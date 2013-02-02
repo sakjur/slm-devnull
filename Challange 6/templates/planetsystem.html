@@ -2,19 +2,26 @@
 <html>
 <head>
 <title>/dev/null awesomeness</title>
+ <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css" />
 </head>
-
 <body>
-    <a href="/">Back to starsystem</a><br />
-    <canvas id="canvas" width="200" height="200"></canvas>
-    <div id="planetinfo"></div>
-    <div id="planetlist"></div> 
-<body>
+	<div class="container">
+	    <div class="row"> 
+	    	<a href="/">Back to starsystem</a><br />
+	    	<canvas id="canvas" width="200" height="200"></canvas>
+	    </div>
+	    <div class="row"> 
+	    	<div id="planetinfo"></div>
+	    	<div id="planetlist"></div> 
+	    </div>
+	</div>
 <script src="/static/jquery.js"></script>
 <script src="/static/main.js"></script>
+<script src="/static/bootstrap.min.js"></script>
 <script>
     shipson = {{ ship | safe }}
     awesome = {{ short | safe }}
     awesomeToMap(awesome, shipson);
 </script>
+</body>
 </html>

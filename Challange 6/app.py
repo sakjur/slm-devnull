@@ -37,16 +37,20 @@ def currentSystem(flyTo=None):
             currentsystem = str(each[1])
     
     cursys = Star.query.filter_by(name=currentsystem).first()
-    cursysid = cursys.id
+    if not cursys:
+        pass
+    else:
+        cursysid = cursys.id
 
-    for each in Planet.query.filter_by(starid=cursysid):
-        if each:
-            exists = True
-        else:
-            exists = False
+        exists = False
+        for each in Planet.query.filter_by(starid=cursysid):
+            if each:
+                exists = True
+            else:
+                exists = False
 
-    if not exists:
-        fillDbStarsystem()
+        if not exists:
+            fillDbStarsystem()
 
     urlshort = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=shortrange")
     short = urlshort.read()
@@ -62,18 +66,17 @@ def scanPlanet():
     urlship = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=show")
     ship = urlship.read()
     pyship = json.loads(ship)
+    rv = ""
 
     for each in pyship.items():
         if each[0] == "currentplanet":
             currentplanet = str(each[1])
+            rv += currentplanet
     
-    curplanet = Planet.query.filter_by(planet_no=currentplanet).first()
-    if not curplanet:
-        return str(currentplanet)
-
-    if planetInfo(currentplanet) == '':
+    if not planetInfo(currentplanet):
         fillPlanetData()
-    return currentplanet
+        rv += "Testar"
+    return rv
 
 @app.route('/planetinfo/<planet>')
 def planetInfo(planet=None):
@@ -82,9 +85,8 @@ def planetInfo(planet=None):
     planet = Planet.query.filter_by(planet_no=planet).first()
     if not planet:
         return ""
-    planetid = planet.id
 
-    planet = PlanDetails.query.filter_by(planetid=planetid).first()
+    planet = PlanDetails.query.filter_by(planetid=planet.id).first()
     rv = ""
     if planet:
         rv += "planetid: " + str(planet.planetid) + "<br />"

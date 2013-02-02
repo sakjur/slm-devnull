@@ -1,17 +1,24 @@
 from flask import Flask, render_template
-import urllib2
+import urllib2, urllib
 
 app = Flask(__name__)
+uri = "https://lostinspace.lanemarknad.se:8000"
+sid = "f6319047-1cfb-4bfa-ae4b-318355d2b90e"
 
 @app.route("/")
-def hello():
-    urlstars = urllib2.urlopen("https://lostinspace.lanemarknad.se:8000/api2/?session=f6319047-1cfb-4bfa-ae4b-318355d2b90e&command=longrange")
+@app.route("/<starchoice>")
+def hello(starchoice=None):
+    urlstars = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=longrange")
     stars = urlstars.read().decode('utf-8')
 
-    urlship = urllib2.urlopen("https://lostinspace.lanemarknad.se:8000/api2/?session=f6319047-1cfb-4bfa-ae4b-318355d2b90e&command=ship&arg=show")
+    urlship = urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=show")
     ship = urlship.read().decode('utf-8')
 
-    return render_template('starsystem.html', stars=stars, ship=ship)
+    if starchoice:
+        starchoice = starchoice.replace(" ", "%20")
+        urllib2.urlopen(uri + "/api2/?session=" + sid + "&command=ship&arg=setunidest&arg2=" + starchoice)
+
+    return render_template('starsystem.html', stars=stars, ship=ship, starchoice=starchoice)
 
 if __name__ == "__main__":
     app.debug = True

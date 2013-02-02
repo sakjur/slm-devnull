@@ -1,16 +1,19 @@
 <!doctype html>
 <html>
 <head>
-<title>DEV NULL FUCK YOU PEEEPS!</title>
+<title>/dev/null awesomeness</title>
 </head>
 
 <body>
     <canvas id="canvas" width="200" height="200"></canvas>
+    <div id="starlist"></div>
+    {{ starchoice }}
 <body>
 <script src="/static/jquery.js"></script>
 <script src="/static/main.js"></script>
 <script>
     json = {{ stars|safe }}
-    jsonToMap(json);
+    shipson = {{ ship | safe }}
+    jsonToMap(json, shipson);
 </script>
 </html>

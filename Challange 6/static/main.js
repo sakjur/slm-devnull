@@ -16,7 +16,26 @@ function jsonToMap(json, shipson) {
     ctx.fillStyle = "rgb(0,0,200)"
     ctx.fillRect(shipson.unix, shipson.uniy, 4, 4)
 
-    setTimeout(location.reload,3000)
+    setInterval(
+        function() {
+            $.ajax("https://lostinspace.lanemarknad.se:8000/api2/?session=f6319047-1cfb-4bfa-ae4b-318355d2b90e&command=ship&arg=show")
+             .done(function ( data )
+                { 
+                    data = $.parseJSON(data)
+                    ctx.clearRect(0,0,200,200)
+
+                    for (var i = 0; i < json.stars.length; i++)
+                    {
+                        star = json.stars[i];
+
+                        ctx.fillStyle = "rgb(200,0,0)";
+                        ctx.fillRect(star.x, star.y, 4, 4);
+                    };
+
+                    ctx.fillStyle = "rgb(0,0,200)";
+                    ctx.fillRect(data.unix, data.uniy, 4, 4);
+                    });
+        }, 1000)
 
 }
 
